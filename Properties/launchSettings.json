@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ChapEdit (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ChapEdit (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
