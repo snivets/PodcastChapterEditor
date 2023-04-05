@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using ATL;
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -15,10 +17,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.ApplicationModel;
 using Windows.Storage.Pickers;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -27,11 +27,13 @@ using Windows.Storage.Pickers;
 namespace ChapEdit
 {
 	/// <summary>
-	/// An empty window that can be used on its own or navigated to within a Frame.
+	/// THe one, the only WinUI 3 window for Chapter Editor.
+	/// Not the most exotic application architecture around!
 	/// </summary>
 	public sealed partial class MainWindow : Window
 	{
 		private ObservableCollection<ChapterInfo> ChapterItems;
+		private AppWindow appWindow;
 
 		public MainWindow() {
 			this.InitializeComponent();
@@ -39,12 +41,33 @@ namespace ChapEdit
 			SetTitleBar(AppTitleBar);
 
 			ChapterItems = new ObservableCollection<ChapterInfo>();
+
+			IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this); // m_window in App.cs
+			WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
+			appWindow = AppWindow.GetFromWindowId(windowId);
+
+			// Set title and icon
+			appWindow.Title = "Audio Chapter Editor";
+			appWindow.SetIcon(Path.Combine(Package.Current.InstalledLocation.Path, "Resources\\BarCafeChair.ico"));
+
+			ResizeWindowToContents();
+		}
+
+		private void ResizeWindowToContents() {
+			var size = new Windows.Graphics.SizeInt32();
+			if (ChapterItems.Count == 0) {
+				size.Width = 500;
+				size.Height = 500;
+			} else {
+				size.Width = 750;
+				size.Height = 500 + 20 * ChapterItems.Count;
+			}
+			appWindow.Resize(size);
 		}
 
 		private async void PickAFileButton_Click(object sender, RoutedEventArgs e) {
 			// Clear previous returned file name, if it exists, between iterations of this scenario
 			PickAFileButton.Content = "Select an audio file with chapters";
-			//TimestampDisplayTextbox.Blocks.Clear();
 
 			// Create a file picker
 			var openPicker = new Windows.Storage.Pickers.FileOpenPicker();
@@ -71,6 +94,8 @@ namespace ChapEdit
 			} else {
 				PickAFileButton.Content = "Select an audio file with chapters";
 			}
+
+			ResizeWindowToContents();
 		}
 
 		private void TimestampUpdated(object sender, TextChangedEventArgs e) {

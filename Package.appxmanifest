@@ -17,7 +17,7 @@
   <Properties>
     <DisplayName>ChapEdit</DisplayName>
     <PublisherDisplayName>equin</PublisherDisplayName>
-    <Logo>Assets\StoreLogo.png</Logo>
+    <Logo>Assets\Square150x150Logo.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -34,13 +34,12 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="ChapEdit"
-        Description="ChapEdit"
+        DisplayName="Audio Chapter Editor"
+        Description="A tool that enables easy and stylish editing of audio chapter files in Windows 11. Designed for podcasters."
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png">
+        Square44x44Logo="Resources\BarCafeChair.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
     </Application>
   </Applications>

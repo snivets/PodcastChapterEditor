@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using ATL;
-using ATL.AudioData;
 using Windows.Storage;
 
 namespace ChapEdit
