@@ -59,8 +59,8 @@ namespace ChapEdit
 				size.Width = 500;
 				size.Height = 500;
 			} else {
-				size.Width = 750;
-				size.Height = 500 + 20 * ChapterItems.Count;
+				size.Width = 1000;
+				size.Height = 1000;
 			}
 			appWindow.Resize(size);
 		}
@@ -90,9 +90,18 @@ namespace ChapEdit
 				var audioMeta = new AudioTagParser(file);
 				ChapterItems.Clear();
 				var chaps = audioMeta.GetChapters().ToList();
-				chaps.ForEach(c => ChapterItems.Add(c));
+				FileInfoPanel.Visibility = Visibility.Visible;
+				if (chaps.Any()) {
+					chaps.ForEach(c => ChapterItems.Add(c));
+					FileInfoPanel.Text = audioMeta.GetFileInfo();
+				} else {
+					ChapterItems.Add(new ChapterInfo(startTime: 0));
+					FileInfoPanel.Text = "No chapters found in the selected audio file.";
+				}
 			} else {
 				PickAFileButton.Content = "Select an audio file with chapters";
+				ChapterItems.Clear();
+				FileInfoPanel.Visibility = Visibility.Collapsed;
 			}
 
 			ResizeWindowToContents();

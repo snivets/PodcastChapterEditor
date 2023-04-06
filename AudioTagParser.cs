@@ -20,7 +20,11 @@ namespace ChapEdit
 			return audioTrack.Chapters;
 		}
 
-		public List<string> GetFriendlyTimestamps() {
+		/// <summary>
+		/// Deprecated, but could be useful for debug at some point.
+		/// </summary>
+		/// <returns>List of strings representing paragraph objects for a text box</returns>
+		public List<string> GetFriendlyChapterSummary() {
 			var timeList = new List<string>();
 			timeList.Add(audioTrack.ChaptersTableDescription);
 			audioTrack.AdditionalFields.ToList().ForEach(af => timeList.Add(af.Key + ":" + af.Value));
@@ -34,6 +38,24 @@ namespace ChapEdit
 					+ "   " + ch.Title);
 			});
 			return timeList;
+		}
+
+		public string GetFileInfo() {
+			var additionalFieldsStr = string.Empty;
+			audioTrack.AdditionalFields.ToList().ForEach(af => additionalFieldsStr += af.Key + ": '" + af.Value + "', ");
+			var metadataFormats = string.Empty;
+			audioTrack.MetadataFormats.ToList().ForEach(mf => metadataFormats += mf.Name + ", ");
+			if (metadataFormats.Length > 0)
+				metadataFormats = metadataFormats.Trim().TrimEnd(',');
+			if (additionalFieldsStr.Length > 0)
+				additionalFieldsStr = additionalFieldsStr.Trim().TrimEnd(',');
+			var info = $"Metadata format(s): {metadataFormats}";
+			if (audioTrack.ChaptersTableDescription.Length > 0)
+				info += $" / Chapters table description: {audioTrack.ChaptersTableDescription}";
+			if (audioTrack.AdditionalFields.Count > 0)
+				info += $" / Additional fields: {additionalFieldsStr}";
+
+			return info;
 		}
 	}
 }

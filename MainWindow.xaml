@@ -33,10 +33,10 @@
 			<Button x:Name="PickAFileButton" Content="Select an audio file with chapters"
 					Click="PickAFileButton_Click" Margin="0,0,0,10"/>
 
-			<ScrollViewer HorizontalScrollBarVisibility="Disabled"
+			<ScrollViewer HorizontalScrollBarVisibility="Auto"
 					IsVerticalScrollChainingEnabled="true"
-					MaxHeight="500"
-					MaxWidth="500">
+					MaxHeight="400"
+					MaxWidth="700">
 				<ItemsRepeater ItemsSource="{x:Bind ChapterItems, Mode=OneWay}">
 					<ItemsRepeater.Layout>
 						<StackLayout Orientation="Vertical" Spacing="8" />
@@ -53,6 +53,14 @@
 					</ItemsRepeater.ItemTemplate>
 				</ItemsRepeater>
 			</ScrollViewer>
+
+			<TextBlock x:Name="FileInfoPanel"
+					   Visibility="Collapsed"
+					   FontSize="10"
+					   TextWrapping="WrapWholeWords"
+					   TextAlignment="Center"
+					   Margin="20,20,20,20"
+					   MaxWidth="500"/>
 		</StackPanel>
 	</Grid>
 </Window>
