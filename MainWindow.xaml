@@ -29,38 +29,49 @@
                        Margin="28,0,0,0"/>
 		</Grid>
 
-		<StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-			<Button x:Name="PickAFileButton" Content="Select an audio file with chapters"
-					Click="PickAFileButton_Click" Margin="0,0,0,10"/>
+		<SplitView Grid.Row="1" x:Name="AlbumArtViewPane" PaneBackground="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
+           IsPaneOpen="False" OpenPaneLength="200" CompactPaneLength="50" DisplayMode="Inline">
+			<SplitView.Pane>
+				<Image x:Name="AlbumArt"></Image>
+			</SplitView.Pane>
+				
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+				<Button x:Name="PickAFileButton" Content="Select an audio file with chapters"
+						Click="PickAFileButton_Click" Margin="0,0,0,10"/>
 
-			<ScrollViewer HorizontalScrollBarVisibility="Auto"
-					IsVerticalScrollChainingEnabled="true"
-					MaxHeight="400"
-					MaxWidth="700">
-				<ItemsRepeater ItemsSource="{x:Bind ChapterItems, Mode=OneWay}">
-					<ItemsRepeater.Layout>
-						<StackLayout Orientation="Vertical" Spacing="8" />
-					</ItemsRepeater.Layout>
-					<ItemsRepeater.ItemTemplate>
-						<DataTemplate x:DataType="atl:ChapterInfo">
-							<StackPanel Orientation="Horizontal">
-								<TextBox TextChanged="TimestampUpdated"
-										 Text="{x:Bind local:MainWindow.FormatChapterTime(StartTime), Mode=OneWay}"
-										 Margin="0,-5,10,0" />
-								<TextBlock Text="{x:Bind Title}" />
-							</StackPanel>
-						</DataTemplate>
-					</ItemsRepeater.ItemTemplate>
-				</ItemsRepeater>
-			</ScrollViewer>
+				<ScrollViewer HorizontalScrollBarVisibility="Auto"
+						IsVerticalScrollChainingEnabled="true"
+						MaxHeight="400"
+						MaxWidth="700">
+					<ItemsRepeater ItemsSource="{x:Bind ChapterItems, Mode=OneWay}">
+						<ItemsRepeater.Layout>
+							<StackLayout Orientation="Vertical" Spacing="8" />
+						</ItemsRepeater.Layout>
+						<ItemsRepeater.ItemTemplate>
+							<DataTemplate x:DataType="atl:ChapterInfo">
+								<StackPanel Orientation="Horizontal">
+									<TextBox TextChanged="TimestampUpdated"
+											 LostFocus="LeaveTimestampBox"
+											 Text="{x:Bind local:MainWindow.FormatChapterTime(StartTime), Mode=OneWay}"
+											 Margin="0,-5,10,0" />
+									<TextBlock Text="{x:Bind Title}" />
+								</StackPanel>
+							</DataTemplate>
+						</ItemsRepeater.ItemTemplate>
+					</ItemsRepeater>
+				</ScrollViewer>
+				<Button x:Name="AddButton"
+						Click="AddNewChapter"
+						Visibility="Collapsed">Add new chapter</Button>
 
-			<TextBlock x:Name="FileInfoPanel"
-					   Visibility="Collapsed"
-					   FontSize="10"
-					   TextWrapping="WrapWholeWords"
-					   TextAlignment="Center"
-					   Margin="20,20,20,20"
-					   MaxWidth="500"/>
-		</StackPanel>
+				<TextBlock x:Name="FileInfoPanel"
+						   Visibility="Collapsed"
+						   FontSize="10"
+						   TextWrapping="WrapWholeWords"
+						   TextAlignment="Center"
+						   Margin="20,20,20,20"
+						   MaxWidth="500"/>
+			</StackPanel>
+		</SplitView>
 	</Grid>
 </Window>

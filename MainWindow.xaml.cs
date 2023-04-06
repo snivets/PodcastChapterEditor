@@ -11,15 +11,23 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Windows.ApplicationModel;
 using Windows.Storage.Pickers;
+using Windows.Storage.Streams;
+using static System.Net.Mime.MediaTypeNames;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -85,12 +93,37 @@ namespace ChapEdit
 
 			// Open the picker for the user to pick a file
 			var file = await openPicker.PickSingleFileAsync();
+
+			// Album art updating
 			if (file != null) {
 				PickAFileButton.Content = file.Name;
 				var audioMeta = new AudioTagParser(file);
 				ChapterItems.Clear();
 				var chaps = audioMeta.GetChapters().ToList();
 				FileInfoPanel.Visibility = Visibility.Visible;
+				AddButton.Visibility = Visibility.Visible;
+				if (audioMeta.GetAlbumArt() != null) {
+					var bitmapImage = new BitmapImage();
+					bitmapImage.CreateOptions = BitmapCreateOptions.None;
+					using (var stream = new InMemoryRandomAccessStream()) {
+						using (var writer = new DataWriter(stream)) {
+							writer.WriteBytes(audioMeta.GetAlbumArt());
+							await writer.StoreAsync();
+							await writer.FlushAsync();
+							writer.DetachStream();
+						}
+						stream.Seek(0);
+						await bitmapImage.SetSourceAsync(stream);
+					}
+					AlbumArt.Source = bitmapImage;
+					AlbumArtViewPane.IsPaneOpen = true;
+				}
+				else {
+					AlbumArt.Source = null;
+					AlbumArtViewPane.IsPaneOpen = false;
+				}
+
+				// Chapter info updating - the good stuff
 				if (chaps.Any()) {
 					chaps.ForEach(c => ChapterItems.Add(c));
 					FileInfoPanel.Text = audioMeta.GetFileInfo();
@@ -102,6 +135,7 @@ namespace ChapEdit
 				PickAFileButton.Content = "Select an audio file with chapters";
 				ChapterItems.Clear();
 				FileInfoPanel.Visibility = Visibility.Collapsed;
+				AddButton.Visibility = Visibility.Collapsed;
 			}
 
 			ResizeWindowToContents();
@@ -125,9 +159,29 @@ namespace ChapEdit
 			}
 		}
 
+		private void AddNewChapter(object sender, RoutedEventArgs e) {
+			ChapterItems.Add(new ChapterInfo(startTime: 0, title: ""));
+		}
+
 		public static string FormatChapterTime(UInt32 millis) {
 			var chapterStart = TimeSpan.FromMilliseconds(millis);
 			return $"{chapterStart.Hours:00}:{chapterStart.Minutes:00}:{chapterStart.Seconds:00}.{chapterStart.Milliseconds:00}";
+		}
+
+		public static UInt32 GetMillisFromFriendlyString(string timeStr) {
+			if (timeStr == null || timeStr.Length == 0 || timeStr.Equals("00:00:00.00"))
+				return 0;
+
+			Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+			var timespan = TimeSpan.Parse(timeStr);
+			var millis = timespan.TotalMilliseconds;
+			return (uint)millis;
+		}
+
+		private void LeaveTimestampBox(object sender, RoutedEventArgs e) {
+			if (((TextBox)sender).Text.Length == 0) {
+				// Get the chapter by timestamp? We have to convert back to millis...
+			}
 		}
 	}
 }

@@ -20,6 +20,10 @@ namespace ChapEdit
 			return audioTrack.Chapters;
 		}
 
+		public byte[] GetAlbumArt() {
+			return audioTrack.EmbeddedPictures.First(p => p.PicType == PictureInfo.PIC_TYPE.Front).PictureData;
+		}
+
 		/// <summary>
 		/// Deprecated, but could be useful for debug at some point.
 		/// </summary>
