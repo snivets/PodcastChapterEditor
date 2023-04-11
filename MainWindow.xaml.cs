@@ -17,7 +17,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -27,7 +26,6 @@ using System.Threading;
 using Windows.ApplicationModel;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
-using static System.Net.Mime.MediaTypeNames;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -40,7 +38,7 @@ namespace ChapEdit
 	/// </summary>
 	public sealed partial class MainWindow : Window
 	{
-		private ObservableCollection<ChapterInfo> ChapterItems;
+		private ObservableCollection<FormattedAudioChapter> Chapters;
 		private AppWindow appWindow;
 
 		public MainWindow() {
@@ -48,7 +46,7 @@ namespace ChapEdit
 			this.ExtendsContentIntoTitleBar = true;
 			SetTitleBar(AppTitleBar);
 
-			ChapterItems = new ObservableCollection<ChapterInfo>();
+			Chapters = new ObservableCollection<FormattedAudioChapter>();
 
 			IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this); // m_window in App.cs
 			WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
@@ -63,7 +61,7 @@ namespace ChapEdit
 
 		private void ResizeWindowToContents() {
 			var size = new Windows.Graphics.SizeInt32();
-			if (ChapterItems.Count == 0) {
+			if (Chapters.Count == 0) {
 				size.Width = 500;
 				size.Height = 500;
 			} else {
@@ -74,9 +72,6 @@ namespace ChapEdit
 		}
 
 		private async void PickAFileButton_Click(object sender, RoutedEventArgs e) {
-			// Clear previous returned file name, if it exists, between iterations of this scenario
-			PickAFileButton.Content = "Select an audio file with chapters";
-
 			// Create a file picker
 			var openPicker = new Windows.Storage.Pickers.FileOpenPicker();
 
@@ -98,7 +93,7 @@ namespace ChapEdit
 			if (file != null) {
 				PickAFileButton.Content = file.Name;
 				var audioMeta = new AudioTagParser(file);
-				ChapterItems.Clear();
+				Chapters.Clear();
 				var chaps = audioMeta.GetChapters().ToList();
 				FileInfoPanel.Visibility = Visibility.Visible;
 				AddButton.Visibility = Visibility.Visible;
@@ -125,17 +120,14 @@ namespace ChapEdit
 
 				// Chapter info updating - the good stuff
 				if (chaps.Any()) {
-					chaps.ForEach(c => ChapterItems.Add(c));
+					chaps.ForEach(c => Chapters.Add(
+						new FormattedAudioChapter(c.Title,
+						FormatChapterTime(c.StartTime))));
 					FileInfoPanel.Text = audioMeta.GetFileInfo();
 				} else {
-					ChapterItems.Add(new ChapterInfo(startTime: 0));
+					Chapters.Add(new FormattedAudioChapter("< Chapter title here>", "00:00:00.00"));
 					FileInfoPanel.Text = "No chapters found in the selected audio file.";
 				}
-			} else {
-				PickAFileButton.Content = "Select an audio file with chapters";
-				ChapterItems.Clear();
-				FileInfoPanel.Visibility = Visibility.Collapsed;
-				AddButton.Visibility = Visibility.Collapsed;
 			}
 
 			ResizeWindowToContents();
@@ -151,8 +143,9 @@ namespace ChapEdit
 
 			// If the text does not match the regular expression, undo the change
 			if (!regex.IsMatch(text)) {
-				if (millisRegex.IsMatch(text)) {
-					((TextBox)sender).Text = FormatChapterTime(UInt32.Parse(text));
+				UInt32 parsedTime;
+				if (millisRegex.IsMatch(text) && UInt32.TryParse(text, out parsedTime)) {
+					((TextBox)sender).Text = FormatChapterTime(parsedTime);
 				} else {
 					((TextBox)sender).Undo();
 				}
@@ -160,7 +153,13 @@ namespace ChapEdit
 		}
 
 		private void AddNewChapter(object sender, RoutedEventArgs e) {
-			ChapterItems.Add(new ChapterInfo(startTime: 0, title: ""));
+			Chapters.Add(new FormattedAudioChapter());
+			SaveButton.Visibility = Visibility.Visible;
+		}
+
+		private void Save(object sender, RoutedEventArgs e) {
+			// Convert `Chapters` to actual array of Chapter objects for library
+			// Do file save operations here
 		}
 
 		public static string FormatChapterTime(UInt32 millis) {
@@ -176,12 +175,6 @@ namespace ChapEdit
 			var timespan = TimeSpan.Parse(timeStr);
 			var millis = timespan.TotalMilliseconds;
 			return (uint)millis;
-		}
-
-		private void LeaveTimestampBox(object sender, RoutedEventArgs e) {
-			if (((TextBox)sender).Text.Length == 0) {
-				// Get the chapter by timestamp? We have to convert back to millis...
-			}
 		}
 	}
 }

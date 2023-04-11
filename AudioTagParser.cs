@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 using ATL;
 using Windows.Storage;
 
@@ -21,27 +23,10 @@ namespace ChapEdit
 		}
 
 		public byte[] GetAlbumArt() {
-			return audioTrack.EmbeddedPictures.First(p => p.PicType == PictureInfo.PIC_TYPE.Front).PictureData;
-		}
+			if (audioTrack.EmbeddedPictures.Any(p => p.PicType == PictureInfo.PIC_TYPE.Front))
+				return audioTrack.EmbeddedPictures.First(p => p.PicType == PictureInfo.PIC_TYPE.Front).PictureData;
 
-		/// <summary>
-		/// Deprecated, but could be useful for debug at some point.
-		/// </summary>
-		/// <returns>List of strings representing paragraph objects for a text box</returns>
-		public List<string> GetFriendlyChapterSummary() {
-			var timeList = new List<string>();
-			timeList.Add(audioTrack.ChaptersTableDescription);
-			audioTrack.AdditionalFields.ToList().ForEach(af => timeList.Add(af.Key + ":" + af.Value));
-			timeList.Add("Codec Family: " + audioTrack.CodecFamily.ToString());
-			audioTrack.Chapters.ToList().ForEach(ch => {
-				var ts = TimeSpan.FromMilliseconds(ch.StartTime);
-				timeList.Add(ts.Hours.ToString().PadLeft(2, '0') + ":"
-					+ ts.Minutes.ToString().PadLeft(2, '0') + ":"
-					+ ts.Seconds.ToString().PadLeft(2, '0') + "."
-					+ ts.Milliseconds.ToString().PadLeft(3, '0')
-					+ "   " + ch.Title);
-			});
-			return timeList;
+			return null;
 		}
 
 		public string GetFileInfo() {
@@ -60,6 +45,33 @@ namespace ChapEdit
 				info += $" / Additional fields: {additionalFieldsStr}";
 
 			return info;
+		}
+
+		public void UpdateTimestampsFromFormattedStrings(FormattedAudioChapter[] fChapters) {
+			var chapters = new List<ChapterInfo>();
+			foreach(FormattedAudioChapter c in fChapters) {
+				Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+				var parsedTimestamp = TimeSpan.Parse(c.Timestamp);
+				var timeInMillis = parsedTimestamp.TotalMilliseconds;
+				ChapterInfo thisChapter = new ChapterInfo(title: c.Title, startTime: (UInt32)timeInMillis);
+				chapters.Add(thisChapter);
+			}
+			this.audioTrack.Chapters = chapters.ToArray();
+		}
+	}
+
+	public class FormattedAudioChapter {
+		public string Title { get; set; }
+		public string Timestamp { get; set; }
+
+		public FormattedAudioChapter() {
+			this.Title = string.Empty;
+			this.Timestamp = "00:00:00.00";
+		}
+
+		public FormattedAudioChapter(string title, string timestamp) {
+			this.Title = title;
+			this.Timestamp = timestamp;
 		}
 	}
 }
