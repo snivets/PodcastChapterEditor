@@ -72,14 +72,15 @@
 								<StackPanel Orientation="Horizontal">
 									<TextBox TextChanged="TimestampUpdated"
 											 Text="{x:Bind Timestamp, Mode=TwoWay}"
-											 Margin="0,-5,10,0" />
-									<TextBlock Text="{x:Bind Title}" />
+											 Margin="0,0,10,0" />
+									<TextBox Text="{x:Bind Title, Mode=TwoWay}" />
 								</StackPanel>
 							</DataTemplate>
 						</ItemsRepeater.ItemTemplate>
 					</ItemsRepeater>
 				</ScrollViewer>
 				<Button x:Name="AddButton"
+						Margin="0,10,0,0"
 						Click="AddNewChapter"
 						Visibility="Collapsed">Add new chapter</Button>
 			</StackPanel>

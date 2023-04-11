@@ -6,4 +6,4 @@ This is a audio chapter editor tool for Windows 11, built using WinUI 3. It's st
 
 I plan to put this on the Windows Store when it's slightly more feature-complete; right now it's in the hardening phase.
 
-_This tool is majorly indebted to the [ATL audio library available](https://github.com/Zeugma440/atldotnet), which is wonderful and makes the backend of this rather straightforward._
+_This tool is majorly indebted to the [ATL.NET audio library](https://github.com/Zeugma440/atldotnet), which is wonderful and makes the backend of this rather straightforward._
