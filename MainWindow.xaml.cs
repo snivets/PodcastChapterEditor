@@ -39,6 +39,7 @@ namespace ChapEdit
 	public sealed partial class MainWindow : Window
 	{
 		private ObservableCollection<FormattedAudioChapter> Chapters;
+		private AudioTagParser Audio;
 		private AppWindow appWindow;
 
 		public MainWindow() {
@@ -71,6 +72,15 @@ namespace ChapEdit
 			appWindow.Resize(size);
 		}
 
+		/// <summary>
+		/// The ATL library uses a much more expansive object called ChapterInfo
+		/// </summary>
+		private ChapterInfo[] ConvertChapterFormat() {
+			var atlChapters = new List<ChapterInfo>();
+			Chapters.ToList().ForEach(c => atlChapters.Add(c.GetChapterInfo()));
+			return atlChapters.ToArray();
+		}
+
 		private async void PickAFileButton_Click(object sender, RoutedEventArgs e) {
 			// Create a file picker
 			var openPicker = new Windows.Storage.Pickers.FileOpenPicker();
@@ -92,17 +102,17 @@ namespace ChapEdit
 			// Album art updating
 			if (file != null) {
 				PickAFileButton.Content = file.Name;
-				var audioMeta = new AudioTagParser(file);
+				this.Audio = new AudioTagParser(file);
 				Chapters.Clear();
-				var chaps = audioMeta.GetChapters().ToList();
+				var chaps = Audio.GetChapters().ToList();
 				FileInfoPanel.Visibility = Visibility.Visible;
 				AddButton.Visibility = Visibility.Visible;
-				if (audioMeta.GetAlbumArt() != null) {
+				if (Audio.GetAlbumArt() != null) {
 					var bitmapImage = new BitmapImage();
 					bitmapImage.CreateOptions = BitmapCreateOptions.None;
 					using (var stream = new InMemoryRandomAccessStream()) {
 						using (var writer = new DataWriter(stream)) {
-							writer.WriteBytes(audioMeta.GetAlbumArt());
+							writer.WriteBytes(Audio.GetAlbumArt());
 							await writer.StoreAsync();
 							await writer.FlushAsync();
 							writer.DetachStream();
@@ -122,8 +132,8 @@ namespace ChapEdit
 				if (chaps.Any()) {
 					chaps.ForEach(c => Chapters.Add(
 						new FormattedAudioChapter(c.Title,
-						FormatChapterTime(c.StartTime))));
-					FileInfoPanel.Text = audioMeta.GetFileInfo();
+						AudioTagParser.FormatChapterTime(c.StartTime))));
+					FileInfoPanel.Text = Audio.GetFileInfo();
 				} else {
 					Chapters.Add(new FormattedAudioChapter("< Chapter title here>", "00:00:00.00"));
 					FileInfoPanel.Text = "No chapters found in the selected audio file.";
@@ -145,7 +155,7 @@ namespace ChapEdit
 			if (!regex.IsMatch(text)) {
 				UInt32 parsedTime;
 				if (millisRegex.IsMatch(text) && UInt32.TryParse(text, out parsedTime)) {
-					((TextBox)sender).Text = FormatChapterTime(parsedTime);
+					((TextBox)sender).Text = AudioTagParser.FormatChapterTime(parsedTime);
 				} else {
 					((TextBox)sender).Undo();
 				}
@@ -158,23 +168,7 @@ namespace ChapEdit
 		}
 
 		private void Save(object sender, RoutedEventArgs e) {
-			// Convert `Chapters` to actual array of Chapter objects for library
-			// Do file save operations here
-		}
-
-		public static string FormatChapterTime(UInt32 millis) {
-			var chapterStart = TimeSpan.FromMilliseconds(millis);
-			return $"{chapterStart.Hours:00}:{chapterStart.Minutes:00}:{chapterStart.Seconds:00}.{chapterStart.Milliseconds:00}";
-		}
-
-		public static UInt32 GetMillisFromFriendlyString(string timeStr) {
-			if (timeStr == null || timeStr.Length == 0 || timeStr.Equals("00:00:00.00"))
-				return 0;
-
-			Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-			var timespan = TimeSpan.Parse(timeStr);
-			var millis = timespan.TotalMilliseconds;
-			return (uint)millis;
+			this.Audio.UpdateChapters(ConvertChapterFormat());
 		}
 	}
 }

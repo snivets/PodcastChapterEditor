@@ -22,6 +22,11 @@ namespace ChapEdit
 			return audioTrack.Chapters;
 		}
 
+		public void UpdateChapters(ChapterInfo[] newChapters) {
+			audioTrack.Chapters = newChapters;
+			audioTrack.SaveAsync();
+		}
+
 		public byte[] GetAlbumArt() {
 			if (audioTrack.EmbeddedPictures.Any(p => p.PicType == PictureInfo.PIC_TYPE.Front))
 				return audioTrack.EmbeddedPictures.First(p => p.PicType == PictureInfo.PIC_TYPE.Front).PictureData;
@@ -58,6 +63,18 @@ namespace ChapEdit
 			}
 			this.audioTrack.Chapters = chapters.ToArray();
 		}
+
+		public static string FormatChapterTime(UInt32 millis) {
+			var chapterStart = TimeSpan.FromMilliseconds(millis);
+			return $"{chapterStart.Hours:00}:{chapterStart.Minutes:00}:{chapterStart.Seconds:00}.{chapterStart.Milliseconds:00}";
+		}
+
+		public static UInt32 GetMillisFromFriendlyString(string timeStr) {
+			Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+			var timespan = TimeSpan.Parse(timeStr);
+			var millis = timespan.TotalMilliseconds;
+			return (uint)millis;
+		}
 	}
 
 	public class FormattedAudioChapter {
@@ -72,6 +89,13 @@ namespace ChapEdit
 		public FormattedAudioChapter(string title, string timestamp) {
 			this.Title = title;
 			this.Timestamp = timestamp;
+		}
+
+		/// <summary>
+		/// Returns this FOrmattedAudioChapter object as ATL's ChapterInfo format.
+		/// </summary>
+		public ChapterInfo GetChapterInfo() {
+			return new ChapterInfo(title: this.Title, startTime: AudioTagParser.GetMillisFromFriendlyString(this.Timestamp));
 		}
 	}
 }
