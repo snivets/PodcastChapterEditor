@@ -6,26 +6,20 @@ using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
-using System.Threading;
 using Windows.ApplicationModel;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
+using Windows.UI;
+using static System.Net.Mime.MediaTypeNames;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -40,6 +34,7 @@ namespace ChapEdit
 	{
 		private ObservableCollection<FormattedAudioChapter> Chapters;
 		private AudioTagParser Audio;
+		private bool HasBorkedTimestamp;
 		private AppWindow appWindow;
 
 		public MainWindow() {
@@ -47,7 +42,8 @@ namespace ChapEdit
 			this.ExtendsContentIntoTitleBar = true;
 			SetTitleBar(AppTitleBar);
 
-			Chapters = new ObservableCollection<FormattedAudioChapter>();
+			this.Chapters = new ObservableCollection<FormattedAudioChapter>();
+			this.HasBorkedTimestamp = false;
 
 			IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this); // m_window in App.cs
 			WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
@@ -132,10 +128,10 @@ namespace ChapEdit
 				if (chaps.Any()) {
 					chaps.ForEach(c => Chapters.Add(
 						new FormattedAudioChapter(c.Title,
-						AudioTagParser.FormatChapterTime(c.StartTime))));
+						AudioTagParser.FormatChapterTimeFromMillis(c.StartTime))));
 					FileInfoPanel.Text = Audio.GetFileInfo();
 				} else {
-					Chapters.Add(new FormattedAudioChapter("< Chapter title here>", "00:00:00.00"));
+					Chapters.Add(new FormattedAudioChapter("< Chapter title here>", "00:00:00.000"));
 					FileInfoPanel.Text = "No chapters found in the selected audio file.";
 				}
 			}
@@ -143,23 +139,29 @@ namespace ChapEdit
 			ResizeWindowToContents();
 		}
 
-		private void TimestampUpdated(object sender, TextChangedEventArgs e) {
+		private void TimestampFocused(object sender, RoutedEventArgs e) {
+			CheckSaveButton();
+			var textBox = (TextBox)sender;
+			textBox.Select(0, textBox.Text.Length);
+		}
+
+		private void TimestampLeft(object sender, RoutedEventArgs e) {
 			// Get the current text of the TextBox
-			var text = ((TextBox)sender).Text;
+			var timeStr = ((TextBox)sender).Text;
+			// Assess if it's a valid timestamp
+			var parseResult = AudioTagParser.GetTimestampString(timeStr);
 
-			// Use a regular expression to only allow numeric values
-			var regex = new Regex("[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,3})?");
-			var millisRegex = new Regex("[0-9]+");
-
-			// If the text does not match the regular expression, undo the change
-			if (!regex.IsMatch(text)) {
-				UInt32 parsedTime;
-				if (millisRegex.IsMatch(text) && UInt32.TryParse(text, out parsedTime)) {
-					((TextBox)sender).Text = AudioTagParser.FormatChapterTime(parsedTime);
-				} else {
-					((TextBox)sender).Undo();
-				}
+			// Move this into a method so it can be called from FormattedTimestamp
+			if (parseResult.SuccessfullyParsed) {
+				((TextBox)sender).Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+				((TextBox)sender).Text = $"{parseResult.TimestampResult:hh\\:mm\\:ss\\.fff}";
+			} else {
+				((TextBox)sender).Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 0, 0));
 			}
+		}
+
+		private void CheckSaveButton() {
+			SaveButton.IsEnabled = !Chapters.ToList().Any(c => !AudioTagParser.GetTimestampString(c.Timestamp).SuccessfullyParsed);
 		}
 
 		private void AddNewChapter(object sender, RoutedEventArgs e) {
@@ -168,7 +170,7 @@ namespace ChapEdit
 		}
 
 		private void Save(object sender, RoutedEventArgs e) {
-			this.Audio.UpdateChapters(ConvertChapterFormat());
+			Audio.UpdateChapters(ConvertChapterFormat());
 		}
 	}
 }

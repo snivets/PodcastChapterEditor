@@ -64,9 +64,9 @@ namespace ChapEdit
 			this.audioTrack.Chapters = chapters.ToArray();
 		}
 
-		public static string FormatChapterTime(UInt32 millis) {
+		public static string FormatChapterTimeFromMillis(UInt32 millis) {
 			var chapterStart = TimeSpan.FromMilliseconds(millis);
-			return $"{chapterStart.Hours:00}:{chapterStart.Minutes:00}:{chapterStart.Seconds:00}.{chapterStart.Milliseconds:00}";
+			return $"{chapterStart.Hours:00}:{chapterStart.Minutes:00}:{chapterStart.Seconds:00}.{chapterStart.Milliseconds:000}";
 		}
 
 		public static UInt32 GetMillisFromFriendlyString(string timeStr) {
@@ -75,27 +75,39 @@ namespace ChapEdit
 			var millis = timespan.TotalMilliseconds;
 			return (uint)millis;
 		}
+
+		public static TimestampFormatResult GetTimestampString(string timeStr) {
+			TimeSpan timespan;
+			string ReturnTimestampString = timeStr;
+			bool IsSuccessful = false;
+
+			// Move this into a method so it can be called from FormattedTimestamp
+			if (TimeSpan.TryParseExact(timeStr, @"h\:mm\:ss\.fff", CultureInfo.InvariantCulture, out timespan) ||
+				TimeSpan.TryParseExact(timeStr, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture, out timespan) ||
+				TimeSpan.TryParseExact(timeStr, @"mm\:ss\.fff", CultureInfo.InvariantCulture, out timespan) ||
+				TimeSpan.TryParseExact(timeStr, @"hhmmss\.fff", CultureInfo.InvariantCulture, out timespan) ||
+				TimeSpan.TryParseExact(timeStr, @"hh\:mm\:ss", CultureInfo.InvariantCulture, out timespan) ||
+				TimeSpan.TryParseExact(timeStr, @"mm\:ss", CultureInfo.InvariantCulture, out timespan) ||
+				TimeSpan.TryParseExact(timeStr, @"m\:ss", CultureInfo.InvariantCulture, out timespan) ||
+				TimeSpan.TryParseExact(timeStr, @"mmss", CultureInfo.InvariantCulture, out timespan) ||
+				TimeSpan.TryParseExact(timeStr, @"hhmmss", CultureInfo.InvariantCulture, out timespan)) {
+				IsSuccessful = true;
+				ReturnTimestampString = $"{timespan:hh\\:mm\\:ss\\.fff}";
+			}
+
+			return new TimestampFormatResult() {
+				TimestampResult = ReturnTimestampString,
+				SuccessfullyParsed = IsSuccessful
+			};
+		}
 	}
 
-	public class FormattedAudioChapter {
-		public string Title { get; set; }
-		public string Timestamp { get; set; }
-
-		public FormattedAudioChapter() {
-			this.Title = string.Empty;
-			this.Timestamp = "00:00:00.00";
-		}
-
-		public FormattedAudioChapter(string title, string timestamp) {
-			this.Title = title;
-			this.Timestamp = timestamp;
-		}
-
-		/// <summary>
-		/// Returns this FOrmattedAudioChapter object as ATL's ChapterInfo format.
-		/// </summary>
-		public ChapterInfo GetChapterInfo() {
-			return new ChapterInfo(title: this.Title, startTime: AudioTagParser.GetMillisFromFriendlyString(this.Timestamp));
-		}
+	/// <summary>
+	/// A return object that contains a formatted timestamp and an indicator of if it was successful.
+	/// </summary>
+	public class TimestampFormatResult
+	{
+		public string TimestampResult { get; set; }
+		public bool SuccessfullyParsed { get; set; }
 	}
 }

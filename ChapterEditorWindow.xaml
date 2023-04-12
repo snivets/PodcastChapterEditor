@@ -38,16 +38,26 @@
 				   CompactPaneLength="50"
 				   DisplayMode="Inline">
 			<SplitView.Pane>
-				<StackPanel Orientation="Vertical">
-					<Image  x:Name="AlbumArt"></Image>
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<Image x:Name="AlbumArt"
+							Grid.Row="1"
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center" />
 					<TextBlock x:Name="FileInfoPanel"
-						   Visibility="Collapsed"
-						   FontSize="10"
-						   TextWrapping="WrapWholeWords"
-						   TextAlignment="Center"
-						   Margin="20,20,20,20"
-						   MaxWidth="500"/>
-				</StackPanel>
+							Grid.Row="2"
+							Visibility="Collapsed"
+							FontSize="10"
+							FontStyle="Italic"
+							TextWrapping="WrapWholeWords"
+							TextAlignment="Right"
+							Margin="10,10,10,10"
+							VerticalAlignment="Top" />
+				</Grid>
 			</SplitView.Pane>
 				
 			<StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -70,7 +80,8 @@
 						<ItemsRepeater.ItemTemplate>
 							<DataTemplate x:DataType="local:FormattedAudioChapter">
 								<StackPanel Orientation="Horizontal">
-									<TextBox TextChanged="TimestampUpdated"
+									<TextBox GotFocus="TimestampFocused"
+											 LostFocus="TimestampLeft"
 											 Text="{x:Bind Timestamp, Mode=TwoWay}"
 											 Margin="0,0,10,0" />
 									<TextBox Text="{x:Bind Title, Mode=TwoWay}" />
