@@ -90,6 +90,7 @@ namespace ChapEdit
 				TimeSpan.TryParseExact(timeStr, @"mm\:ss", CultureInfo.InvariantCulture, out timespan) ||
 				TimeSpan.TryParseExact(timeStr, @"m\:ss", CultureInfo.InvariantCulture, out timespan) ||
 				TimeSpan.TryParseExact(timeStr, @"mmss", CultureInfo.InvariantCulture, out timespan) ||
+				TimeSpan.TryParseExact(timeStr, @"hmmss", CultureInfo.InvariantCulture, out timespan) ||
 				TimeSpan.TryParseExact(timeStr, @"hhmmss", CultureInfo.InvariantCulture, out timespan)) {
 				IsSuccessful = true;
 				ReturnTimestampString = $"{timespan:hh\\:mm\\:ss\\.fff}";

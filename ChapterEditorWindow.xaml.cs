@@ -11,11 +11,11 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Windows.ApplicationModel;
+using Windows.Graphics;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI;
@@ -34,7 +34,6 @@ namespace ChapEdit
 	{
 		private ObservableCollection<FormattedAudioChapter> Chapters;
 		private AudioTagParser Audio;
-		private bool HasBorkedTimestamp;
 		private AppWindow appWindow;
 
 		public MainWindow() {
@@ -43,7 +42,6 @@ namespace ChapEdit
 			SetTitleBar(AppTitleBar);
 
 			this.Chapters = new ObservableCollection<FormattedAudioChapter>();
-			this.HasBorkedTimestamp = false;
 
 			IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this); // m_window in App.cs
 			WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
@@ -57,7 +55,7 @@ namespace ChapEdit
 		}
 
 		private void ResizeWindowToContents() {
-			var size = new Windows.Graphics.SizeInt32();
+			var size = new SizeInt32();
 			if (Chapters.Count == 0) {
 				size.Width = 500;
 				size.Height = 500;
@@ -103,6 +101,7 @@ namespace ChapEdit
 				var chaps = Audio.GetChapters().ToList();
 				FileInfoPanel.Visibility = Visibility.Visible;
 				AddButton.Visibility = Visibility.Visible;
+				Scroller.Visibility = Visibility.Visible;
 				if (Audio.GetAlbumArt() != null) {
 					var bitmapImage = new BitmapImage();
 					bitmapImage.CreateOptions = BitmapCreateOptions.None;
@@ -158,6 +157,11 @@ namespace ChapEdit
 			} else {
 				((TextBox)sender).Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 0, 0));
 			}
+		}
+
+		private void TimestampChanged(object sender, TextChangedEventArgs e) {
+			var text = ((TextBox)sender).Text;
+			((TextBox)sender).Text = Regex.Match(((TextBox)sender).Text, @"[:\.0-9]*").Value;
 		}
 
 		private void CheckSaveButton() {

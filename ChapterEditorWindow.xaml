@@ -69,11 +69,13 @@
 							Click="Save"
 							Visibility="Collapsed">Save</Button>
 				</StackPanel>
-				<ScrollViewer HorizontalScrollBarVisibility="Auto"
+				<ScrollViewer x:Name="Scroller"
+						HorizontalScrollBarVisibility="Auto"
 						IsVerticalScrollChainingEnabled="true"
 						MaxHeight="400"
-						MaxWidth="700">
-					<ItemsRepeater x:Name="Repeater" ItemsSource="{x:Bind Chapters, Mode=TwoWay}">
+						MaxWidth="700"
+						Visibility="Collapsed">
+					<ItemsRepeater ItemsSource="{x:Bind Chapters, Mode=TwoWay}" TabFocusNavigation="Local">
 						<ItemsRepeater.Layout>
 							<StackLayout Orientation="Vertical" Spacing="8" />
 						</ItemsRepeater.Layout>
@@ -83,7 +85,8 @@
 									<TextBox GotFocus="TimestampFocused"
 											 LostFocus="TimestampLeft"
 											 Text="{x:Bind Timestamp, Mode=TwoWay}"
-											 Margin="0,0,10,0" />
+											 Margin="0,0,10,0"
+											 TextChanged="TimestampChanged"/>
 									<TextBox Text="{x:Bind Title, Mode=TwoWay}" />
 								</StackPanel>
 							</DataTemplate>
