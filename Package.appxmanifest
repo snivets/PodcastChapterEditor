@@ -1,23 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
-<Package
-  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
-  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
-
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+         xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+         IgnorableNamespaces="uap mp rescap">
+  
   <Identity
     Name="3d0d7d23-5321-4fb8-9b1b-bce5f694517b"
     Publisher="CN=equin"
-    Version="1.0.0.0" />
+    Version="0.9.11.0" />
 
   <mp:PhoneIdentity PhoneProductId="3d0d7d23-5321-4fb8-9b1b-bce5f694517b" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>ChapEdit</DisplayName>
-    <PublisherDisplayName>equin</PublisherDisplayName>
-    <Logo>Assets\Square150x150Logo.png</Logo>
+    <DisplayName>Audio Chapter Editor</DisplayName>
+    <PublisherDisplayName>Nate Stevens</PublisherDisplayName>
+    <Logo>Resources\BarCafeChair.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -30,19 +29,24 @@
   </Resources>
 
   <Applications>
-    <Application Id="App"
-      Executable="$targetnametoken$.exe"
-      EntryPoint="$targetentrypoint$">
-      <uap:VisualElements
-        DisplayName="Audio Chapter Editor"
-        Description="A tool that enables easy and stylish editing of audio chapter files in Windows 11. Designed for podcasters."
-        BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Resources\BarCafeChair.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
-      </uap:VisualElements>
-    </Application>
-  </Applications>
+		<Application Id="App"
+                 Executable="$targetnametoken$.exe"
+                 EntryPoint="$targetentrypoint$">
+			<uap:VisualElements
+				  DisplayName="Audio Chapter Editor"
+				  Description="A tool that enables easy and stylish editing of audio chapter files in Windows 11. Designed for podcasters."
+				  BackgroundColor="transparent"
+				  Square150x150Logo="Resources\BarCafeChair.png"
+				  Square44x44Logo="Resources\BarCafeChair.png">
+				<uap:DefaultTile>
+					<uap:ShowNameOnTiles>
+						<uap:ShowOn Tile="square150x150Logo"/>
+					</uap:ShowNameOnTiles>
+				</uap:DefaultTile>
+			</uap:VisualElements>
+		</Application>
+
+	</Applications>
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
