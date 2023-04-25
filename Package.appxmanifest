@@ -7,11 +7,11 @@
          IgnorableNamespaces="uap mp rescap">
   
   <Identity
-    Name="3d0d7d23-5321-4fb8-9b1b-bce5f694517b"
-    Publisher="CN=equin"
-    Version="0.9.11.0" />
+    Name="50366NateStevens.AudioChapterEditor"
+    Publisher="CN=54EB45EA-F522-4723-8422-EB217E3E071F"
+    Version="0.9.15.0" />
 
-  <mp:PhoneIdentity PhoneProductId="3d0d7d23-5321-4fb8-9b1b-bce5f694517b" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="bcd3f633-6f6c-4788-906d-cecd6ecd4b43" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>Audio Chapter Editor</DisplayName>

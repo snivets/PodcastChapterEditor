@@ -34,6 +34,11 @@ namespace ChapEdit
 			return null;
 		}
 
+		public void UpdateAlbumArt(byte[] newImage) {
+			PictureInfo newPic = PictureInfo.fromBinaryData(newImage, PictureInfo.PIC_TYPE.Front);
+			audioTrack.EmbeddedPictures.Insert(0, newPic);
+		}
+
 		public string GetFileInfo() {
 			var additionalFieldsStr = string.Empty;
 			audioTrack.AdditionalFields.ToList().ForEach(af => additionalFieldsStr += af.Key + ": '" + af.Value + "', ");
@@ -76,12 +81,15 @@ namespace ChapEdit
 			return (uint)millis;
 		}
 
+		/// <summary>
+		/// Takes any ole' timestamp formatted string and desperately tries to convert it to the podcast standard.
+		/// </summary>
+		/// <returns></returns>
 		public static TimestampFormatResult GetTimestampString(string timeStr) {
 			TimeSpan timespan;
 			string ReturnTimestampString = timeStr;
 			bool IsSuccessful = false;
 
-			// Move this into a method so it can be called from FormattedTimestamp
 			if (TimeSpan.TryParseExact(timeStr, @"h\:mm\:ss\.fff", CultureInfo.InvariantCulture, out timespan) ||
 				TimeSpan.TryParseExact(timeStr, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture, out timespan) ||
 				TimeSpan.TryParseExact(timeStr, @"mm\:ss\.fff", CultureInfo.InvariantCulture, out timespan) ||

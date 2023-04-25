@@ -13,13 +13,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
 using Windows.ApplicationModel;
 using Windows.Graphics;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI;
-using static System.Net.Mime.MediaTypeNames;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -56,12 +56,12 @@ namespace ChapEdit
 
 		private void ResizeWindowToContents() {
 			var size = new SizeInt32();
-			if (Chapters.Count == 0) {
-				size.Width = 500;
-				size.Height = 500;
+			if (Chapters.Count == 0 && !AlbumArtViewPane.IsPaneOpen) {
+				size.Width = 400;
+				size.Height = 400;
 			} else {
-				size.Width = 1000;
-				size.Height = 1000;
+				size.Width = 600;
+				size.Height = 600;
 			}
 			appWindow.Resize(size);
 		}
@@ -75,7 +75,7 @@ namespace ChapEdit
 			return atlChapters.ToArray();
 		}
 
-		private async void PickAFileButton_Click(object sender, RoutedEventArgs e) {
+		private async void PickFile(object sender, RoutedEventArgs e) {
 			// Create a file picker
 			var openPicker = new Windows.Storage.Pickers.FileOpenPicker();
 
@@ -102,6 +102,8 @@ namespace ChapEdit
 				FileInfoPanel.Visibility = Visibility.Visible;
 				AddButton.Visibility = Visibility.Visible;
 				Scroller.Visibility = Visibility.Visible;
+				ArtButton.Visibility = Visibility.Visible;
+				SaveButton.Visibility = Visibility.Visible;
 				if (Audio.GetAlbumArt() != null) {
 					var bitmapImage = new BitmapImage();
 					bitmapImage.CreateOptions = BitmapCreateOptions.None;
@@ -121,6 +123,8 @@ namespace ChapEdit
 				else {
 					AlbumArt.Source = null;
 					AlbumArtViewPane.IsPaneOpen = false;
+					FileInfoPanel.Text = string.Empty;
+					SaveButton.Visibility = Visibility.Collapsed;
 				}
 
 				// Chapter info updating - the good stuff
@@ -129,10 +133,9 @@ namespace ChapEdit
 						new FormattedAudioChapter(c.Title,
 						AudioTagParser.FormatChapterTimeFromMillis(c.StartTime))));
 					FileInfoPanel.Text = Audio.GetFileInfo();
-				} else {
-					Chapters.Add(new FormattedAudioChapter("< Chapter title here>", "00:00:00.000"));
-					FileInfoPanel.Text = "No chapters found in the selected audio file.";
 				}
+				Scroller.Visibility = chaps.Any() ? Visibility.Visible : Visibility.Collapsed;
+				NoChaptersInfoText.Visibility = chaps.Any() ? Visibility.Collapsed : Visibility.Visible;
 			}
 
 			ResizeWindowToContents();
@@ -142,6 +145,10 @@ namespace ChapEdit
 			CheckSaveButton();
 			var textBox = (TextBox)sender;
 			textBox.Select(0, textBox.Text.Length);
+		}
+
+		private void ChapterTitleFocused(object sender, RoutedEventArgs e) {
+			CheckSaveButton();
 		}
 
 		private void TimestampLeft(object sender, RoutedEventArgs e) {
@@ -156,25 +163,61 @@ namespace ChapEdit
 				((TextBox)sender).Text = $"{parseResult.TimestampResult:hh\\:mm\\:ss\\.fff}";
 			} else {
 				((TextBox)sender).Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 0, 0));
+				// Set this here since a call to CheckSaveButton() only checks the object array, which isn't updated until after this
+				SaveButton.IsEnabled = false;
 			}
 		}
 
 		private void TimestampChanged(object sender, TextChangedEventArgs e) {
-			var text = ((TextBox)sender).Text;
 			((TextBox)sender).Text = Regex.Match(((TextBox)sender).Text, @"[:\.0-9]*").Value;
-		}
-
-		private void CheckSaveButton() {
-			SaveButton.IsEnabled = !Chapters.ToList().Any(c => !AudioTagParser.GetTimestampString(c.Timestamp).SuccessfullyParsed);
 		}
 
 		private void AddNewChapter(object sender, RoutedEventArgs e) {
 			Chapters.Add(new FormattedAudioChapter());
-			SaveButton.Visibility = Visibility.Visible;
+			Scroller.Visibility = Visibility.Visible;
+			NoChaptersInfoText.Visibility = Visibility.Collapsed;
+		}
+
+		private void CheckSaveButton() {
+			if (!Chapters.ToList().Any(c => !AudioTagParser.GetTimestampString(c.Timestamp).SuccessfullyParsed))
+				SaveButton.IsEnabled = true;
 		}
 
 		private void Save(object sender, RoutedEventArgs e) {
 			Audio.UpdateChapters(ConvertChapterFormat());
+		}
+
+		private async void ChangeArt(object sender, RoutedEventArgs e) {
+			// Same logic as above
+			var openPicker = new FileOpenPicker();
+			var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+			WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
+			openPicker.ViewMode = PickerViewMode.Thumbnail;
+
+			openPicker.FileTypeFilter.Add(".jpg");
+			openPicker.FileTypeFilter.Add(".jpeg");
+			openPicker.FileTypeFilter.Add(".png");
+
+			var file = await openPicker.PickSingleFileAsync();
+
+			// Add to audio file
+			if (file != null) {
+				PickAFileButton.Content = file.Name;
+				var image = await file.OpenReadAsync();
+
+				// Set art frame (since above method works differently for file load)
+				var bitmap = new BitmapImage();
+				bitmap.SetSource(image);
+				AlbumArt.Source = bitmap;
+				AlbumArtViewPane.IsPaneOpen = true;
+
+				// Create byte array for ATL
+				byte[] imgBytes = new byte[image.Size];
+				await image.ReadAsync(imgBytes.AsBuffer(), (uint)image.Size, InputStreamOptions.None);
+				Audio.UpdateAlbumArt(imgBytes);
+			}
+
+			ResizeWindowToContents();
 		}
 	}
 }

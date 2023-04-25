@@ -64,7 +64,7 @@
 				<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
 					<Button x:Name="PickAFileButton"
 							Content="Select an audio file"
-							Click="PickAFileButton_Click"/>
+							Click="PickFile" />
 					<Button x:Name="SaveButton"
 							Click="Save"
 							Visibility="Collapsed">Save</Button>
@@ -87,16 +87,29 @@
 											 Text="{x:Bind Timestamp, Mode=TwoWay}"
 											 Margin="0,0,10,0"
 											 TextChanged="TimestampChanged"/>
-									<TextBox Text="{x:Bind Title, Mode=TwoWay}" />
+									<TextBox Text="{x:Bind Title, Mode=TwoWay}"
+											 GotFocus="ChapterTitleFocused" />
 								</StackPanel>
 							</DataTemplate>
 						</ItemsRepeater.ItemTemplate>
 					</ItemsRepeater>
 				</ScrollViewer>
-				<Button x:Name="AddButton"
-						Margin="0,10,0,0"
-						Click="AddNewChapter"
-						Visibility="Collapsed">Add new chapter</Button>
+				<TextBlock x:Name="NoChaptersInfoText"
+							Visibility="Collapsed"
+							FontSize="14"
+							FontStyle="Italic"
+							TextWrapping="WrapWholeWords"
+							TextAlignment="Center"
+							VerticalAlignment="Top"
+							Margin="0,25,0,25">No chapters in the selected file - yet!</TextBlock>
+				<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+					<Button x:Name="AddButton"
+							Click="AddNewChapter"
+							Visibility="Collapsed">+Chapter</Button>
+					<Button x:Name="ArtButton"
+							Click="ChangeArt"
+							Visibility="Collapsed">+Art</Button>
+				</StackPanel>
 			</StackPanel>
 		</SplitView>
 	</Grid>
