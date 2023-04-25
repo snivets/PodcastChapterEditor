@@ -97,7 +97,7 @@
 				<TextBlock x:Name="NoChaptersInfoText"
 							Visibility="Collapsed"
 							FontSize="14"
-							FontStyle="Italic"
+							FontWeight="Bold"
 							TextWrapping="WrapWholeWords"
 							TextAlignment="Center"
 							VerticalAlignment="Top"

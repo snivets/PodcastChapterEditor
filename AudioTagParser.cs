@@ -8,8 +8,7 @@ using Windows.Storage;
 
 namespace ChapEdit
 {
-	public class AudioTagParser
-	{
+	public class AudioTagParser {
 		private readonly StorageFile audioFile;
 		private Track audioTrack;
 
@@ -59,7 +58,7 @@ namespace ChapEdit
 
 		public void UpdateTimestampsFromFormattedStrings(FormattedAudioChapter[] fChapters) {
 			var chapters = new List<ChapterInfo>();
-			foreach(FormattedAudioChapter c in fChapters) {
+			foreach (FormattedAudioChapter c in fChapters) {
 				Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 				var parsedTimestamp = TimeSpan.Parse(c.Timestamp);
 				var timeInMillis = parsedTimestamp.TotalMilliseconds;

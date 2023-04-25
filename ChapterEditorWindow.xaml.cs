@@ -103,7 +103,6 @@ namespace ChapEdit
 				AddButton.Visibility = Visibility.Visible;
 				Scroller.Visibility = Visibility.Visible;
 				ArtButton.Visibility = Visibility.Visible;
-				SaveButton.Visibility = Visibility.Visible;
 				if (Audio.GetAlbumArt() != null) {
 					var bitmapImage = new BitmapImage();
 					bitmapImage.CreateOptions = BitmapCreateOptions.None;
@@ -118,14 +117,12 @@ namespace ChapEdit
 						await bitmapImage.SetSourceAsync(stream);
 					}
 					AlbumArt.Source = bitmapImage;
-					AlbumArtViewPane.IsPaneOpen = true;
 				}
 				else {
 					AlbumArt.Source = null;
-					AlbumArtViewPane.IsPaneOpen = false;
 					FileInfoPanel.Text = string.Empty;
-					SaveButton.Visibility = Visibility.Collapsed;
 				}
+				AlbumArtViewPane.IsPaneOpen = Audio.GetAlbumArt() != null;
 
 				// Chapter info updating - the good stuff
 				if (chaps.Any()) {
@@ -141,6 +138,8 @@ namespace ChapEdit
 			ResizeWindowToContents();
 		}
 
+		// Identical to the focus method for Chapter Title, but we don't want to select all text there when focused
+		// (we don't assume edits to this field will involve replacing the entire contents).
 		private void TimestampFocused(object sender, RoutedEventArgs e) {
 			CheckSaveButton();
 			var textBox = (TextBox)sender;
@@ -160,7 +159,7 @@ namespace ChapEdit
 			// Move this into a method so it can be called from FormattedTimestamp
 			if (parseResult.SuccessfullyParsed) {
 				((TextBox)sender).Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-				((TextBox)sender).Text = $"{parseResult.TimestampResult:hh\\:mm\\:ss\\.fff}";
+				((TextBox)sender).Text = parseResult.TimestampResult;
 			} else {
 				((TextBox)sender).Foreground = new SolidColorBrush(Color.FromArgb(255, 200, 0, 0));
 				// Set this here since a call to CheckSaveButton() only checks the object array, which isn't updated until after this
@@ -179,6 +178,8 @@ namespace ChapEdit
 		}
 
 		private void CheckSaveButton() {
+			if (SaveButton.Visibility == Visibility.Collapsed)
+				SaveButton.Visibility = Visibility.Visible;
 			if (!Chapters.ToList().Any(c => !AudioTagParser.GetTimestampString(c.Timestamp).SuccessfullyParsed))
 				SaveButton.IsEnabled = true;
 		}
@@ -215,6 +216,9 @@ namespace ChapEdit
 				byte[] imgBytes = new byte[image.Size];
 				await image.ReadAsync(imgBytes.AsBuffer(), (uint)image.Size, InputStreamOptions.None);
 				Audio.UpdateAlbumArt(imgBytes);
+
+				// Make sure the Save button is now visible
+				CheckSaveButton();
 			}
 
 			ResizeWindowToContents();
