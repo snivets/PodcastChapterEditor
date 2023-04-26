@@ -60,8 +60,8 @@ namespace ChapEdit
 				size.Width = 400;
 				size.Height = 400;
 			} else {
-				size.Width = 600;
-				size.Height = 600;
+				size.Width = 700;
+				size.Height = 700;
 			}
 			appWindow.Resize(size);
 		}
@@ -157,7 +157,7 @@ namespace ChapEdit
 			var parseResult = AudioTagParser.GetTimestampString(timeStr);
 
 			// Move this into a method so it can be called from FormattedTimestamp
-			if (parseResult.SuccessfullyParsed) {
+			if (parseResult.SuccessfullyParsed && TimeSpan.Parse(parseResult.TimestampResult).TotalSeconds <= Audio.Duration) {
 				((TextBox)sender).Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
 				((TextBox)sender).Text = parseResult.TimestampResult;
 			} else {

@@ -9,7 +9,7 @@
   <Identity
     Name="50366NateStevens.AudioChapterEditor"
     Publisher="CN=54EB45EA-F522-4723-8422-EB217E3E071F"
-    Version="0.9.15.0" />
+    Version="0.9.16.0" />
 
   <mp:PhoneIdentity PhoneProductId="bcd3f633-6f6c-4788-906d-cecd6ecd4b43" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using ATL;
+using Windows.Media.Core;
 using Windows.Storage;
 
 namespace ChapEdit
@@ -11,6 +12,8 @@ namespace ChapEdit
 	public class AudioTagParser {
 		private readonly StorageFile audioFile;
 		private Track audioTrack;
+
+		public int Duration => audioTrack.Duration;
 
 		public AudioTagParser(StorageFile audioFile) {
 			this.audioFile = audioFile;
@@ -47,11 +50,11 @@ namespace ChapEdit
 				metadataFormats = metadataFormats.Trim().TrimEnd(',');
 			if (additionalFieldsStr.Length > 0)
 				additionalFieldsStr = additionalFieldsStr.Trim().TrimEnd(',');
-			var info = $"Metadata format(s): {metadataFormats}";
-			if (audioTrack.ChaptersTableDescription.Length > 0)
-				info += $" / Chapters table description: {audioTrack.ChaptersTableDescription}";
+			var info = $"Duration: {TimeSpan.FromSeconds(Duration).ToString():hh:mm:ss} / Metadata format(s): {metadataFormats}";
 			if (audioTrack.AdditionalFields.Count > 0)
 				info += $" / Additional fields: {additionalFieldsStr}";
+			if (audioTrack.ChaptersTableDescription.Length > 0)
+				info += $" / Chapters table description: {audioTrack.ChaptersTableDescription}";
 
 			return info;
 		}
