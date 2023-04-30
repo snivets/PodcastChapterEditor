@@ -95,6 +95,10 @@
 									<TextBox Text="{x:Bind Title, Mode=TwoWay}"
 											 GotFocus="ChapterTitleFocused"
 											 PlaceholderText="Description" />
+									<Button Content="x"
+											Click="DeleteChapter"
+											Tag="{x:Bind Index}"
+											Background="Transparent" />
 								</StackPanel>
 							</DataTemplate>
 						</ItemsRepeater.ItemTemplate>

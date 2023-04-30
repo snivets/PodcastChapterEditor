@@ -128,7 +128,8 @@ namespace ChapEdit
 				if (chaps.Any()) {
 					chaps.ForEach(c => Chapters.Add(
 						new FormattedAudioChapter(c.Title,
-						AudioTagParser.FormatChapterTimeFromMillis(c.StartTime))));
+							AudioTagParser.FormatChapterTimeFromMillis(c.StartTime),
+							Chapters.Count)));
 					FileInfoPanel.Text = Audio.GetFileInfo();
 				}
 				Scroller.Visibility = chaps.Any() ? Visibility.Visible : Visibility.Collapsed;
@@ -175,6 +176,11 @@ namespace ChapEdit
 			Chapters.Add(new FormattedAudioChapter());
 			Scroller.Visibility = Visibility.Visible;
 			NoChaptersInfoText.Visibility = Visibility.Collapsed;
+		}
+
+		private void DeleteChapter(object sender, RoutedEventArgs e) {
+			var index = (int)((Button)sender).Tag;
+			Chapters.Remove(Chapters.First(c => c.Index == index));
 		}
 
 		private void CheckSaveButton() {
