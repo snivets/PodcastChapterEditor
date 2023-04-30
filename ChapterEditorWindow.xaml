@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+﻿<!-- Copyright (c) Microsoft Corporation and Contributors. -->
 <!-- Licensed under the MIT License. -->
 
 <Window
@@ -95,10 +95,16 @@
 									<TextBox Text="{x:Bind Title, Mode=TwoWay}"
 											 GotFocus="ChapterTitleFocused"
 											 PlaceholderText="Description" />
+									<Button Content="⤴️"
+											Click="MoveChapterUp"
+											Tag="{x:Bind Index}"
+											Background="Transparent"
+											BorderBrush="Transparent" />
 									<Button Content="x"
 											Click="DeleteChapter"
 											Tag="{x:Bind Index}"
-											Background="Transparent" />
+											Background="Transparent"
+											BorderBrush="Transparent" />
 								</StackPanel>
 							</DataTemplate>
 						</ItemsRepeater.ItemTemplate>

@@ -173,7 +173,7 @@ namespace ChapEdit
 		}
 
 		private void AddNewChapter(object sender, RoutedEventArgs e) {
-			Chapters.Add(new FormattedAudioChapter());
+			Chapters.Add(new FormattedAudioChapter(Chapters.Count));
 			Scroller.Visibility = Visibility.Visible;
 			NoChaptersInfoText.Visibility = Visibility.Collapsed;
 		}
@@ -181,6 +181,18 @@ namespace ChapEdit
 		private void DeleteChapter(object sender, RoutedEventArgs e) {
 			var index = (int)((Button)sender).Tag;
 			Chapters.Remove(Chapters.First(c => c.Index == index));
+		}
+
+		private void MoveChapterUp(object sender, RoutedEventArgs e) {
+			var index = (int)((Button)sender).Tag;
+			// Since chapters are not guaranteed to be sequential, modifying the Index by -1 can result in wonky behavior.
+			// Instead, splice the entire chapters object and rearrange it.
+			var position = Chapters.IndexOf(Chapters.First(c => c.Index == index));
+			var chapter = Chapters[position];
+			if (position != 0) {
+				Chapters.RemoveAt(position);
+				Chapters.Insert(position-1, chapter);
+			}
 		}
 
 		private void CheckSaveButton() {

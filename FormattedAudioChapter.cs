@@ -8,10 +8,10 @@ namespace ChapEdit
 		public string Timestamp { get; set; }
 		public int Index { get; set; }
 
-		public FormattedAudioChapter() {
+		public FormattedAudioChapter(int index) {
 			this.Title = string.Empty;
 			this.Timestamp = "00:00:00.000";
-			this.Index = 0;
+			this.Index = index;
 		}
 
 		public FormattedAudioChapter(string title, string timestamp) {
