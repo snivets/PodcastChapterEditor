@@ -103,6 +103,7 @@ namespace ChapEdit
 				AddButton.Visibility = Visibility.Visible;
 				Scroller.Visibility = Visibility.Visible;
 				ArtButton.Visibility = Visibility.Visible;
+				SaveButton.Visibility = Visibility.Collapsed;
 				if (Audio.GetAlbumArt() != null) {
 					var bitmapImage = new BitmapImage();
 					bitmapImage.CreateOptions = BitmapCreateOptions.None;
