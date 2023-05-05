@@ -4,7 +4,7 @@ This is an audio chapter editor tool for Windows, built using WinUI 3. It's stra
 
 **[Link to the app on the Windows Store ($4.99)](https://www.microsoft.com/store/productId/9P0N6801VP3N)**
 
-![Audio chapter editor screenshot](/Resources/screenshot.png?raw=true "Screenshot of Nate's audio chapter editor")
+![Audio chapter editor screenshot](/Resources/screenshot-apponly.png?raw=true "Screenshot of Nate's audio chapter editor")
 
 ## Features:
 * Changing cover art
