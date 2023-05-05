@@ -1,8 +1,10 @@
 # Audio Chapter Editor
 
-This is a audio chapter editor tool for Windows, built using WinUI 3. It's straightforward, minimal, (hopefully) good-looking, and useful if you're looking for a tool to embed podcast chapters in Windows. Such a tool exists out there for Mac, and Descript and other such tools can embed chapter marks in files they create, but if you want to edit these frames thereafter, this is the tool for you.
+This is an audio chapter editor tool for Windows, built using WinUI 3. It's straightforward, minimal, (hopefully) good-looking, and useful if you're looking for a tool to embed podcast chapters in audio files on Windows. Such a tool exists out there for Mac, and Descript and other such tools can embed chapter marks in files they create, but if you want to edit these frames thereafter, this is the tool for you!
 
-![Audio chapter editor screenshot](/screenshot.png?raw=true "Screenshot of Nate's audio chapter editor")
+**[Link to the app on the Windows Store ($4.99)](https://www.microsoft.com/store/productId/9P0N6801VP3N)**
+
+![Audio chapter editor screenshot](/Resources/screenshot.png?raw=true "Screenshot of Nate's audio chapter editor")
 
 ## Features:
 * Changing cover art
@@ -14,6 +16,7 @@ This is a audio chapter editor tool for Windows, built using WinUI 3. It's strai
 ## Possible future features:
 * Ways to paste timestamp shorthands from clipboard
 * Editing images per-chapter - feedback requested if useful
+* Export chapters as Spotify- and YouTube-friendly text format
 * ?? (Email me for feature suggestions!)
 
 _This tool is majorly indebted to the [ATL.NET audio library](https://github.com/Zeugma440/atldotnet), which is wonderful and makes the backend of this rather straightforward._
