@@ -4,18 +4,17 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using ATL;
-using Windows.Media.Core;
 using Windows.Storage;
 
 namespace ChapEdit
 {
-	public class AudioTagParser {
+	public class ChapterEditorAudioLayer {
 		private readonly StorageFile audioFile;
 		private Track audioTrack;
 
 		public int Duration => audioTrack.Duration;
 
-		public AudioTagParser(StorageFile audioFile) {
+		public ChapterEditorAudioLayer(StorageFile audioFile) {
 			this.audioFile = audioFile;
 			this.audioTrack = new Track(this.audioFile.Path);
 		}

@@ -9,14 +9,14 @@
   <Identity
     Name="50366NateStevens.AudioChapterEditor"
     Publisher="CN=54EB45EA-F522-4723-8422-EB217E3E071F"
-    Version="1.0.1.0" />
+    Version="1.0.2.0" />
 
   <mp:PhoneIdentity PhoneProductId="bcd3f633-6f6c-4788-906d-cecd6ecd4b43" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>Audio Chapter Editor</DisplayName>
+    <DisplayName>Podcast Chapter Editor</DisplayName>
     <PublisherDisplayName>Nate Stevens</PublisherDisplayName>
-    <Logo>Resources\BarCafeChair.png</Logo>
+    <Logo>Resources\bostonbeansound-png.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -33,11 +33,11 @@
                  Executable="$targetnametoken$.exe"
                  EntryPoint="$targetentrypoint$">
 			<uap:VisualElements
-				  DisplayName="Audio Chapter Editor"
+				  DisplayName="Podcast Chapter Editor"
 				  Description="A tool that enables easy and stylish editing of audio chapter files in Windows. Designed for podcasters."
 				  BackgroundColor="transparent"
-				  Square150x150Logo="Resources\BarCafeChair.png"
-				  Square44x44Logo="Resources\BarCafeChair.png">
+				  Square150x150Logo="Resources\bostonbeansound-png.png"
+				  Square44x44Logo="Resources\bostonbeansound-png.png">
 				<uap:DefaultTile>
 				</uap:DefaultTile>
 			</uap:VisualElements>

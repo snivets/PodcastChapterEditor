@@ -17,15 +17,15 @@
 		</Grid.RowDefinitions>
 
 		<Grid x:Name="AppTitleBar">
-			<Image Source="Resources/BarCafeChair.png"
+			<Image Source="Resources/bostonbeansound-png.png"
                    HorizontalAlignment="Left" 
-                   Width="16" Height="16" 
-                   Margin="8,0"/>
-			<TextBlock x:Name="AppTitleTextBlock" Text="Audio Chapter Editor"
+                   Width="26" Height="26" 
+                   Margin="4,0"/>
+			<TextBlock x:Name="AppTitleTextBlock" Text="Podcast Chapter Editor"
                        TextWrapping="NoWrap"
                        Style="{StaticResource CaptionTextBlockStyle}" 
                        VerticalAlignment="Center"
-                       Margin="28,0,0,0"/>
+                       Margin="36,0,0,0"/>
 		</Grid>
 
 		<SplitView Grid.Row="1"

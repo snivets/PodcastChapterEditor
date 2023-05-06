@@ -28,7 +28,7 @@ namespace ChapEdit
 		/// Returns this FormattedAudioChapter object as ATL's ChapterInfo format.
 		/// </summary>
 		public ChapterInfo GetChapterInfo() {
-			return new ChapterInfo(title: this.Title, startTime: AudioTagParser.GetMillisFromFriendlyString(this.Timestamp));
+			return new ChapterInfo(title: this.Title, startTime: ChapterEditorAudioLayer.GetMillisFromFriendlyString(this.Timestamp));
 		}
 	}
 }

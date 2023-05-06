@@ -9,18 +9,18 @@
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <AssemblyName>AudioChapterEditor</AssemblyName>
-    <ApplicationIcon>Resources\BarCafeChair.ico</ApplicationIcon>
+    <AssemblyName>PodcastChapterEditor</AssemblyName>
+    <ApplicationIcon>Resources\bostonbeansound-ico.ico</ApplicationIcon>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
-    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <GenerateTestArtifacts>False</GenerateTestArtifacts>
     <AppxBundle>Always</AppxBundle>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <AppxPackageDir>C:\Code\AudioChapterEditor\AppPackages\</AppxPackageDir>
-    <AppxBundlePlatforms>arm64</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <PackageCertificateThumbprint>EE8105525284FAA7B37F9778F8432867767D99C0</PackageCertificateThumbprint>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
@@ -28,7 +28,7 @@
     <StartupObject>ChapEdit.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Resources\BarCafeChair.ico" />
+    <Content Include="Resources\bostonbeansound-ico.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,10 +50,10 @@
     <None Update="AudioChapterEditor.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\BarCafeChair.ico">
+    <None Update="Resources\bostonbeansound-ico.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\BarCafeChair.png">
+    <None Update="Resources\bostonbeansound-png.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

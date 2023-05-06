@@ -33,7 +33,7 @@ namespace ChapEdit
 	public sealed partial class MainWindow : Window
 	{
 		private ObservableCollection<FormattedAudioChapter> Chapters;
-		private AudioTagParser Audio;
+		private ChapterEditorAudioLayer Audio;
 		private AppWindow appWindow;
 
 		public MainWindow() {
@@ -49,7 +49,7 @@ namespace ChapEdit
 
 			// Set title and icon
 			appWindow.Title = "Audio Chapter Editor";
-			appWindow.SetIcon(Path.Combine(Package.Current.InstalledLocation.Path, "Resources\\BarCafeChair.ico"));
+			appWindow.SetIcon(Path.Combine(Package.Current.InstalledLocation.Path, "Resources\\bostonbeansound-ico.ico"));
 
 			ResizeWindowToContents();
 		}
@@ -96,7 +96,7 @@ namespace ChapEdit
 			// Album art updating
 			if (file != null) {
 				PickAFileButton.Content = file.Name;
-				this.Audio = new AudioTagParser(file);
+				this.Audio = new ChapterEditorAudioLayer(file);
 				Chapters.Clear();
 				var chaps = Audio.GetChapters().ToList();
 				FileInfoPanel.Visibility = Visibility.Visible;
@@ -129,7 +129,7 @@ namespace ChapEdit
 				if (chaps.Any()) {
 					chaps.ForEach(c => Chapters.Add(
 						new FormattedAudioChapter(c.Title,
-							AudioTagParser.FormatChapterTimeFromMillis(c.StartTime),
+							ChapterEditorAudioLayer.FormatChapterTimeFromMillis(c.StartTime),
 							Chapters.Count)));
 					FileInfoPanel.Text = Audio.GetFileInfo();
 				}
@@ -156,7 +156,7 @@ namespace ChapEdit
 			// Get the current text of the TextBox
 			var timeStr = ((TextBox)sender).Text;
 			// Assess if it's a valid timestamp
-			var parseResult = AudioTagParser.GetTimestampString(timeStr);
+			var parseResult = ChapterEditorAudioLayer.GetTimestampString(timeStr);
 
 			// Move this into a method so it can be called from FormattedTimestamp
 			if (parseResult.SuccessfullyParsed && TimeSpan.Parse(parseResult.TimestampResult).TotalSeconds <= Audio.Duration) {
@@ -199,7 +199,7 @@ namespace ChapEdit
 		private void CheckSaveButton() {
 			if (SaveButton.Visibility == Visibility.Collapsed)
 				SaveButton.Visibility = Visibility.Visible;
-			if (!Chapters.ToList().Any(c => !AudioTagParser.GetTimestampString(c.Timestamp).SuccessfullyParsed))
+			if (!Chapters.ToList().Any(c => !ChapterEditorAudioLayer.GetTimestampString(c.Timestamp).SuccessfullyParsed))
 				SaveButton.IsEnabled = true;
 		}
 
